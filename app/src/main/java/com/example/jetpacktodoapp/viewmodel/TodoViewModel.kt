@@ -1,28 +1,30 @@
 package com.example.jetpacktodoapp.viewmodel
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.jetpacktodoapp.TodoManager
+import androidx.lifecycle.viewModelScope
+import com.example.jetpacktodoapp.MainApplication
 import com.example.jetpacktodoapp.data.Todo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.sql.Date
+import java.time.Instant
 
 class TodoViewModel : ViewModel() {
     
-    private val _todoList = MutableLiveData<List<Todo>>()
-    val todoList : LiveData<List<Todo>> = _todoList
-
-    fun getTodoList(){
-        _todoList.value = TodoManager.getTodoList().reversed()
-    }
+    val todoDAO = MainApplication.todoDatabase.getTodoDAO()
+    val todoList : LiveData<List<Todo>> = todoDAO.getTodoList()
 
     fun addTodoItem(title: String){
-        TodoManager.addTodoItem(title)
-        getTodoList()
+        viewModelScope.launch(Dispatchers.IO) {
+            todoDAO.addTodoItem(Todo(title = title, createdAt = Date.from(Instant.now())))
+        }
     }
 
     fun deleteTodoItem(item : Todo){
-        TodoManager.deleteTodoItem(item)
-        getTodoList()
+        viewModelScope.launch(Dispatchers.IO) {
+            todoDAO.deleteTodoItem(item.id)
+        }
     }
 
 }

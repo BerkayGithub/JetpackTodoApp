@@ -67,14 +67,22 @@ fun TodoListPage(todoViewModel: TodoViewModel){
                     }
                 }
             )
-        }?: Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = "No items on the list",
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-        )
+            if (it.isEmpty()){
+                EmptyListText()
+            }
+        }?: EmptyListText()
         
     }
+}
+
+@Composable
+fun EmptyListText() {
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = "No items on the list",
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
